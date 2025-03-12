@@ -4,13 +4,13 @@ from kunde import Kunde, kunden_list
 
 def hauptmenue():
     while True:
-        print("\n----- Hauptmenü -------")
-        print("1. Privatkunde erstellen")
-        print("2. Firmenkunde erstellen")
-        print("3. Alle Kunden anzeigen")
-        print("4. Kunde aktualisieren")
-        print("5. Kunde löschen")
-        print("0. Beenden")
+        print("\n----- Hauptmenü ------- ")
+        print("1. Privatkunde erstellen ")
+        print("2. Firmenkunde erstellen ")
+        print("3. Alle Kunden anzeigen ")
+        print("4. Kunde aktualisieren ")
+        print("5. Kunde löschen ")
+        print("0. Beenden ")
 
 
         wahl = input("Bitte waehlen Sie eine Option: ")
