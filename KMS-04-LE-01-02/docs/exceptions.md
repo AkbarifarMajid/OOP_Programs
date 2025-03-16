@@ -4,7 +4,7 @@ In diesem Projekt habe ich eigene Fehlermeldungen (Exceptions) mit Standardtext
 erstellt, damit Fehler klar und einheitlich angezeigt werden.
 ---
 
-## 1. DatenbankFehler
+## 1. `DatenbankFehler` – Basisklasse für alle Datenbankfehler
 
 ```
 class DatenbankFehler(Exception):
@@ -12,8 +12,10 @@ class DatenbankFehler(Exception):
     def __init__(self, message="Unbekannter Datenbankfehler ist aufgetreten."):
         super().__init__(f" DatenbankFehler: {message}")
 ```
+Diese Klasse dient als Basis für alle anderen spezifischen Fehler.
 
-## 2. VerbindungsFehler
+
+## 2. `VerbindungsFehler` – Fehler beim Aufbau der Verbindung
 
 ```
 class VerbindungsFehler(DatenbankFehler):
@@ -21,9 +23,9 @@ class VerbindungsFehler(DatenbankFehler):
     def __init__(self, message="Verbindung zur Datenbank fehlgeschlagen."):
         super().__init__(f" VerbindungsFehler: {message}")
 ```
+Wird ausgelöst, wenn keine Verbindung zur Datenbank aufgebaut werden kann.
 
-
-## 3. SpeicherFehler
+## 3. `SpeicherFehler` – Fehler beim Speichern oder Laden von Daten
 
 ```
 class SpeicherFehler(DatenbankFehler):
@@ -31,9 +33,9 @@ class SpeicherFehler(DatenbankFehler):
     def __init__(self, message="Fehler beim Speichern oder Laden von Daten."):
         super().__init__(f" SpeicherFehler: {message}")
 ```
+Tritt auf, wenn Probleme beim Speichern, Aktualisieren oder Laden von Daten auftreten.
 
-
-## 4. NichtGefundenFehler
+##  4. `NichtGefundenFehler` – Datensatz nicht gefunden
 
 ```
 class NichtGefundenFehler(DatenbankFehler):
@@ -41,27 +43,30 @@ class NichtGefundenFehler(DatenbankFehler):
     def __init__(self, message="Der angeforderte Datensatz wurde nicht gefunden."):
         super().__init__(f" NichtGefundenFehler: {message}")
 ```
-
+Wird verwendet, wenn ein Datensatz (z.B. Produkt oder Kunde) nicht in der Datenbank existiert.
 
 ## Verwendung im Code
 
-     Methode                                Exception-Typ   
------------------------------------|-----------------------------
-     connect()                     |       VerbindungsFehler()
-     save_customer()               |       SpeicherFehler()
-     save_product()                |       SpeicherFehler() 
-     load_product_with_rating()    |       NichtGefundenFehler()
-     Andere DB-Operationen         |       DatenbankFehler()
+ Methode                        Exception-Typ           
+
+ `connect()`                   `VerbindungsFehler()`   
+ `create_tables()`             `SpeicherFehler()`      
+ `save_customer()`             `SpeicherFehler()`      
+ `load_all_customers()`        `DatenbankFehler()`     
+ `save_product()`              `SpeicherFehler()`      
+ `load_all_products()`         `DatenbankFehler()`     
+ `add_review_to_product()`     `SpeicherFehler()`      
+ `load_product_with_rating()`  `NichtGefundenFehler()` 
+ `delete_customer()`           `SpeicherFehler()`      
+ `delete_product()`            `SpeicherFehler()`      
 
 
-## UML-Diagramm
+##  Vorteile dieser Struktur
 
-Das folgende Diagramm zeigt die Struktur der Klassen im Projekt:
+Einheitliche Fehlerbehandlung im gesamten Projekt  
+Aussagekräftige und verständliche Fehlermeldungen  
+Klare Trennung der Fehlerarten  
+Bessere Testbarkeit und Wartbarkeit
 
-![UML](docs/uml_warenwelt.jpg)
 
-Die editierbare Version befindet sich in: `docs/uml_warenwelt.drawio`
-
-
-Datei erstellt am: 15.03.2025  
-Erstellt von: Akbarifar Projekt
+Erstellt von: Majid Akbarifar 
