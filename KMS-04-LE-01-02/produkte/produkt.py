@@ -16,7 +16,7 @@ class Produkt(ABC):
     @name.setter
     def name(self, value):
         if not Validator.validate_product_name(value):
-            raise ValueError("❌ Ungültiger Produktname.")
+            raise ValueError("Invalid product name.")
         self._name = value
 
     @property
@@ -26,7 +26,7 @@ class Produkt(ABC):
     @price.setter
     def price(self, value):
         if not Validator.validate_price(value):
-            raise ValueError("❌ Ungültiger Preis.")
+            raise ValueError("Invalid product Preis.")
         self._price = value
 
     @property
@@ -36,7 +36,7 @@ class Produkt(ABC):
     @weight.setter
     def weight(self, value):
         if not Validator.validate_weight(value):
-            raise ValueError("❌ Ungültiges Gewicht.")
+            raise ValueError("Invalid weight.")
         self._weight = value
 
     @property
@@ -47,7 +47,7 @@ class Produkt(ABC):
         if 1 <= rating <= 5:
             self.reviews.append(rating)
         else:
-            raise ValueError("❌ Bewertung muss zwischen 1 und 5 liegen.")
+            raise ValueError("Bewertung muss zwischen 1 und 5 liegen.")
 
     def average_rating(self):
         if not self.reviews:
@@ -56,4 +56,4 @@ class Produkt(ABC):
 
     @abstractmethod
     def __str__(self):
-        pass  # subclasses (Buch, Elektronik...) must implement this
+        pass

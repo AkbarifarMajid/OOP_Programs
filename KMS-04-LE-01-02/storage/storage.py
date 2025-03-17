@@ -194,6 +194,78 @@ class Storage:
         except mysql.connector.Error:
             raise SpeicherFehler()
 
+    # Load a specific customer from the database by ID
+    def load_customer_by_id(self, db_kunde_id):
+        try:
+            # Step 1: Load basic customer data
+            self.cursor.execute("SELECT * FROM kunden WHERE id = %s", (db_kunde_id,))
+            row = self.cursor.fetchone()
+
+            if not row:
+                raise NichtGefundenFehler("Customer not found.")
+
+            db_kunde_id, name, address, email, phone, password, kundentyp = row
+
+            # Step 2: Load sub-table data based on type
+            if kundentyp == "privat":
+                self.cursor.execute("SELECT birthdate FROM privatkunden WHERE id = %s", (db_kunde_id,))
+                result = self.cursor.fetchone()
+                if result:
+                    birthdate = str(result[0])
+                    kunde = Privatkunde(name, address, email, phone, password, birthdate)
+
+            elif kundentyp == "firma":
+                self.cursor.execute("SELECT company_number FROM firmenkunden WHERE id = %s", (db_kunde_id,))
+                result = self.cursor.fetchone()
+                if result:
+                    company_number = result[0]
+                    kunde = Firmenkunde(name, address, email, phone, password, company_number)
+
+            else:
+                raise DatenbankFehler("Unknown customer type.")
+
+            kunde._id = db_kunde_id
+            return kunde
+
+        except mysql.connector.Error:
+            raise DatenbankFehler()
+
+    # Update the data of an existing customer in the database
+    def update_customer(self, kunde):
+        try:
+            # Step 1: Update main customer table
+            sql = """
+                UPDATE kunden
+                SET name = %s, address = %s, email = %s, phone = %s, password = %s
+                WHERE id = %s
+            """
+            values = (kunde.name,
+                      kunde.address,
+                      kunde.email,
+                      kunde.phone,
+                      kunde.password,
+                      kunde.id
+                      )
+            self.cursor.execute(sql, values)
+
+            # Step 2: Update sub-table based on type
+            if isinstance(kunde, Privatkunde):
+                self.cursor.execute(
+                    "UPDATE privatkunden SET birthdate = %s WHERE id = %s",
+                    (kunde.birthdate, kunde.id)
+                )
+            elif isinstance(kunde, Firmenkunde):
+                self.cursor.execute(
+                    "UPDATE firmenkunden SET company_number = %s WHERE id = %s",
+                    (kunde.company_number, kunde.id)
+                )
+
+            self.conn.commit()
+            print(f"Customer with ID {kunde.id} has been updated.")
+
+        except mysql.connector.Error:
+            raise SpeicherFehler()
+
     # Delete a customer from the database using their ID
     def delete_customer(self, db_kunde_id):
         try:
@@ -203,7 +275,7 @@ class Storage:
         except mysql.connector.Error:
             raise SpeicherFehler()
 
-    # Load all customers (base + sub-table data if needed) from database and return them as a list
+    # Load all customers
     def load_all_customers(self):
         kunden = []
 
@@ -301,7 +373,7 @@ class Storage:
 
     # Load all products from the database (including specific details, no ratings)
     def load_all_products(self):
-        produkte = []  # List to store loaded product objects
+        produkte = []
 
         try:
             # Step 1: Read all rows from 'produkte' table
@@ -344,6 +416,7 @@ class Storage:
         except mysql.connector.Error:
             raise DatenbankFehler()
 
+    # Delete a Product from the database using their ID
     def delete_product(self, produkt_id):
         try:
             self.cursor.execute("DELETE FROM produkte WHERE id = %s", (produkt_id,))
@@ -352,7 +425,126 @@ class Storage:
         except mysql.connector.Error:
             raise SpeicherFehler()
 
-#-------------------------- Rating and uploading products with ratings --------------------------
+    # Load one product by ID, including its ratings
+    def load_product_with_rating(self, db_produkt_id):
+        try:
+            # Step 1: Produkt aus Haupttabelle lesen
+            self.cursor.execute("SELECT * FROM produkte WHERE id = %s", (db_produkt_id,))
+            row = self.cursor.fetchone()
+
+            if not row:
+                raise NichtGefundenFehler("Product not found.")
+
+            db_produkt_id, name, price, weight, kategorie = row
+
+            # Step 2: Details je nach Kategorie laden
+            if kategorie == "buch":
+                self.cursor.execute("SELECT author, pages_count FROM produkte_buch WHERE id = %s", (db_produkt_id,))
+                result = self.cursor.fetchone()
+                if result:
+                    produkt = Buch(name, price, weight, result[0], result[1])
+                else:
+                    raise NichtGefundenFehler(f"Buchdetails fehlen für Produkt-ID {db_produkt_id}")
+
+            elif kategorie == "elektronik":
+                self.cursor.execute("SELECT brand, warranty_years FROM produkte_elektronik WHERE id = %s",
+                                    (db_produkt_id,))
+                result = self.cursor.fetchone()
+                if result:
+                    produkt = Elektronik(name, price, weight, result[0], result[1])
+                else:
+                    raise NichtGefundenFehler(f"Elektronikdetails fehlen für Produkt-ID {db_produkt_id}")
+
+            elif kategorie == "kleidung":
+                self.cursor.execute("SELECT size, color FROM produkte_kleidung WHERE id = %s", (db_produkt_id,))
+                result = self.cursor.fetchone()
+                if result:
+                    produkt = Kleidung(name, price, weight, result[0], result[1])
+                else:
+                    raise NichtGefundenFehler(f"Kleidungsdetails fehlen für Produkt-ID {db_produkt_id}")
+
+            else:
+                raise DatenbankFehler(f"Unknown product category: {kategorie}")
+
+            # Step 3: ID setzen
+            produkt._id = db_produkt_id
+
+            # Step 4: Bewertungen laden
+            self.cursor.execute("SELECT rating FROM bewertungen WHERE produkt_id = %s", (db_produkt_id,))
+            rows = self.cursor.fetchall()
+
+            bewertungen = []
+            for row in rows:
+                bewertungen.append(row[0])
+            produkt.reviews = bewertungen
+
+            return produkt
+
+        except mysql.connector.Error:
+            raise DatenbankFehler()
+
+    # Load all products including their average ratings
+    def load_all_products_with_rating(self):
+        produkte = []
+
+        try:
+            # Step 1: Load all products from 'produkte' table
+            self.cursor.execute("SELECT * FROM produkte")
+            rows = self.cursor.fetchall()
+
+            for row in rows:
+                db_produkt_id, name, price, weight, kategorie = row
+
+                # Step 2: Determine category and load specific details
+                if kategorie == "buch":
+                    self.cursor.execute("SELECT author, pages_count FROM produkte_buch WHERE id = %s", (db_produkt_id,))
+                    result = self.cursor.fetchone()
+                    if result:
+                        produkt = Buch(name, price, weight, result[0], result[1])
+                    else:
+                        raise NichtGefundenFehler(f"Book details missing for product ID {db_produkt_id}")
+
+                elif kategorie == "elektronik":
+                    self.cursor.execute("SELECT brand, warranty_years FROM produkte_elektronik WHERE id = %s",
+                                        (db_produkt_id,))
+                    result = self.cursor.fetchone()
+                    if result:
+                        produkt = Elektronik(name, price, weight, result[0], result[1])
+                    else:
+                        raise NichtGefundenFehler(f"Electronics details missing for product ID {db_produkt_id}")
+
+                elif kategorie == "kleidung":
+                    self.cursor.execute("SELECT size, color FROM produkte_kleidung WHERE id = %s", (db_produkt_id,))
+                    result = self.cursor.fetchone()
+                    if result:
+                        produkt = Kleidung(name, price, weight, result[0], result[1])
+                    else:
+                        raise NichtGefundenFehler(f"Clothing details missing for product ID {db_produkt_id}")
+
+                else:
+                    raise DatenbankFehler(f"Unknown product category: {kategorie}")
+
+                # Step 3: Assign ID
+                produkt._id = db_produkt_id
+
+                # Step 4: Load ratings
+                self.cursor.execute("SELECT rating FROM bewertungen WHERE produkt_id = %s", (db_produkt_id,))
+                ratings = self.cursor.fetchall()
+
+                bewertungen = []
+                for row in ratings:
+                    bewertungen.append(row[0])
+                produkt.reviews = bewertungen
+
+                # Step 5: Add to list
+                produkte.append(produkt)
+
+            return produkte
+
+        except mysql.connector.Error:
+            raise DatenbankFehler()
+
+    #-------------------------- Recording and calculating product ratings --------------------------
     # Add a review (rating) to a product
     def add_review_to_product(self, db_produkt_id, rating):
         try:
@@ -396,131 +588,3 @@ class Storage:
 
         except mysql.connector.Error:
             raise DatenbankFehler()
-
-    # Load one product by ID, including its ratings
-    def load_product_with_rating(self, db_produkt_id):
-        try:
-            self.cursor.execute("SELECT * FROM produkte WHERE id = %s", (db_produkt_id,))
-            row = self.cursor.fetchone()
-
-            if not row:
-                raise NichtGefundenFehler("Product not found.")
-
-            db_produkt_id, name, price, weight, kategorie = row
-
-            # Map of category -----> table name + class + columns
-            details = {
-                "buch": {
-                    "table": "produkte_buch",
-                    "class": Buch,
-                    "columns": ("author", "pages_count")
-                },
-                "elektronik": {
-                    "table": "produkte_elektronik",
-                    "class": Elektronik,
-                    "columns": ("brand", "warranty_years")
-                },
-                "kleidung": {
-                    "table": "produkte_kleidung",
-                    "class": Kleidung,
-                    "columns": ("size", "color")
-                }
-            }
-
-            if kategorie not in details:
-                raise DatenbankFehler(f":Unknown product category {kategorie}")
-
-            table = details[kategorie]["table"]
-            klass = details[kategorie]["class"]
-            cols = ", ".join(details[kategorie]["columns"])
-
-            self.cursor.execute(f"SELECT {cols} FROM {table} WHERE id = %s", (db_produkt_id,))
-            result = self.cursor.fetchone()
-
-            if not result:
-                raise NichtGefundenFehler(f"No details for product with ID {db_produkt_id}")
-
-            # Create product object dynamically
-            produkt = klass(name, price, weight, *result)
-            produkt._id = db_produkt_id
-
-            # Bewertungen laden (Liste von Zahlen)
-            self.cursor.execute("SELECT rating FROM bewertungen WHERE produkt_id = %s", (db_produkt_id,))
-            rows = self.cursor.fetchall()
-
-            bewertungen = []
-            for row in rows:
-                bewertungen.append(row[0])
-            produkt.reviews = bewertungen
-
-            return produkt
-
-        except mysql.connector.Error:
-            raise DatenbankFehler()
-
-    # Load all products including their average ratings
-    def load_all_products_with_rating(self):
-        produkte = []
-
-        try:
-            # Mapping category to table, columns, and class
-            details_map = {
-                "buch": {
-                    "table": "produkte_buch",
-                    "columns": ("author", "pages_count"),
-                    "class": Buch
-                },
-                "elektronik": {
-                    "table": "produkte_elektronik",
-                    "columns": ("brand", "warranty_years"),
-                    "class": Elektronik
-                },
-                "kleidung": {
-                    "table": "produkte_kleidung",
-                    "columns": ("size", "color"),
-                    "class": Kleidung
-                }
-            }
-
-            # Step 1: Get all base products
-            self.cursor.execute("SELECT * FROM produkte")
-            rows = self.cursor.fetchall()
-
-            for row in rows:
-                db_produkt_id, name, price, weight, kategorie = row
-
-                # Step 2: Validate category and extract info
-                if kategorie not in details_map:
-                    raise DatenbankFehler(f"Unknown product category: {kategorie}")
-
-                info = details_map[kategorie]
-                table = info["table"]
-                cols = ", ".join(info["columns"])
-                klass = info["class"]
-
-                # Step 3: Load specific details
-                self.cursor.execute(f"SELECT {cols} FROM {table} WHERE id = %s", (db_produkt_id,))
-                details = self.cursor.fetchone()
-
-                if not details:
-                    raise NichtGefundenFehler(f"Details missing for product ID {db_produkt_id}")
-
-                # Step 4: Create product object and assign ID
-                produkt = klass(name, price, weight, *details)
-                produkt._id = db_produkt_id
-
-                # Step 5: Load product reviews
-                self.cursor.execute("SELECT rating FROM bewertungen WHERE produkt_id = %s", (db_produkt_id,))
-                rows = self.cursor.fetchall()
-                ratings = []
-                for row in rows:
-                    ratings.append(row[0])
-                produkt.reviews = ratings
-
-                produkte.append(produkt)
-
-            return produkte
-
-        except mysql.connector.Error:
-            raise DatenbankFehler()
-

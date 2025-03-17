@@ -17,7 +17,7 @@ class Firmenkunde(Kunde):
     @company_number.setter
     def company_number(self, value):
         if not Validator.validate_company_number(value):
-            raise ValueError("Ungültige Firmennummer.")
+            raise ValueError("Invalid company number.")
         self._company_number = value
 
     def __str__(self):
@@ -28,5 +28,5 @@ class Firmenkunde(Kunde):
             f"Telefon: {self.phone}\n"
             f"Passwort: {self.password}"
         )
-        return f"{base_info}\nFirmenummer: {self.company_number}"
+        return f"{base_info}\nCompany: {self.company_number}"
 

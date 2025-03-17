@@ -18,7 +18,7 @@ class Elektronik(Produkt):
     @brand.setter
     def brand(self, value):
         if not Validator.validate_brand(value):
-            raise ValueError("❌ Ungültige Marke.")
+            raise ValueError("Invalid trademark.")
         self._brand = value
 
     @property
@@ -28,7 +28,7 @@ class Elektronik(Produkt):
     @warranty_years.setter
     def warranty_years(self, value):
         if not Validator.validate_warranty_years(value):
-            raise ValueError("❌ Ungültige Garantiezeit.")
+            raise ValueError("Invalid warranty period.")
         self._warranty_years = value
 
     def __str__(self):

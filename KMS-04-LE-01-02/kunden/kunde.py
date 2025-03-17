@@ -31,7 +31,7 @@ class Kunde(ABC):
     @name.setter
     def name(self, value):
         if not Validator.validate_name(value):
-            raise ValueError("Ungültiger Name")
+            raise ValueError("Invalid name")
         self._name = value
 
     # ----------------------------
@@ -43,7 +43,7 @@ class Kunde(ABC):
     @address.setter
     def address(self, value):
         if not Validator.validate_address(value):
-            raise ValueError("Ungültige Adresse")
+            raise ValueError("Invalid address")
         self._address = value
 
     # ----------------------------
@@ -55,7 +55,7 @@ class Kunde(ABC):
     @email.setter
     def email(self, value):
         if not Validator.validate_email(value):
-            raise ValueError("Ungültige E-Mail-Adresse")
+            raise ValueError("Invalid email address")
         self._email = value
 
     # ----------------------------
@@ -67,7 +67,7 @@ class Kunde(ABC):
     @phone.setter
     def phone(self, value):
         if not Validator.validate_phone(value):
-            raise ValueError("Ungültige Telefonnummer")
+            raise ValueError("Invalid phone number")
         self._phone = value
 
     # ----------------------------
@@ -79,7 +79,7 @@ class Kunde(ABC):
     @password.setter
     def password(self, value):
         if not value:
-            raise ValueError("Passwort darf nicht leer sein")
+            raise ValueError("Password must not be empty")
         self._password = value
 
     # ----------------------------

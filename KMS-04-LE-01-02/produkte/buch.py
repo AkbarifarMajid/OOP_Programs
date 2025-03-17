@@ -18,7 +18,7 @@ class Buch(Produkt):
     @author.setter
     def author(self, value):
         if not Validator.validate_author(value):
-            raise ValueError("❌ Ungültiger Autor.")
+            raise ValueError("Invalid author.")
         self._author = value
 
     @property
@@ -28,7 +28,7 @@ class Buch(Produkt):
     @pages_count.setter
     def pages_count(self, value):
         if not Validator.validate_pages_count(value):
-            raise ValueError("❌ Ungültige Seitenanzahl.")
+            raise ValueError("Invalid page count.")
         self._pages_count = value
 
     def __str__(self):

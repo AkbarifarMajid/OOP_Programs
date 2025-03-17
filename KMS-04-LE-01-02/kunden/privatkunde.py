@@ -19,7 +19,7 @@ class Privatkunde(Kunde):
     @birthdate.setter
     def birthdate(self, value):
         if not Validator.validate_birthdate(value):
-            raise ValueError("Ungültiges Geburtsdatum.")
+            raise ValueError("Invalid date of birth.")
         self._birthdate = value
 
     def calculate_age(self):
@@ -38,4 +38,4 @@ class Privatkunde(Kunde):
             f"Telefon: {self.phone}\n"
             f"Passwort: {self.password}"
         )
-        return f"{base_info}\nGeburtsdatum: {self.birthdate}\nAlter: {self.calculate_age()} Jahre"
+        return f"{base_info}\nbirth date: {self.birthdate}\nAge: {self.calculate_age()} years"

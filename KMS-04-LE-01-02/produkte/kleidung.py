@@ -17,7 +17,7 @@ class Kleidung(Produkt):
     @size.setter
     def size(self, value):
         if not Validator.validate_size(value):
-            raise ValueError("❌ Ungültige Größe.")
+            raise ValueError("Ungültige Größe.")
         self._size = value
 
     @property
@@ -27,7 +27,7 @@ class Kleidung(Produkt):
     @color.setter
     def color(self, value):
         if not Validator.validate_color(value):
-            raise ValueError("❌ Ungültige Farbe.")
+            raise ValueError("Ungültige Farbe.")
         self._color = value
 
     def __str__(self):
