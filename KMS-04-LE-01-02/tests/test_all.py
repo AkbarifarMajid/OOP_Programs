@@ -8,13 +8,17 @@ from storage.exceptions import SpeicherFehler, VerbindungsFehler
 from storage.storage import Storage
 
 # Kunden
-from kunden.privatkunde import Privatkunde
-from kunden.firmenkunde import Firmenkunde
+#from kunden.privatkunde import Privatkunde
+#from kunden.firmenkunde import Firmenkunde
+from kunden import Kunde, Privatkunde, Firmenkunde
+
 
 # Produkte
-from produkte.buch import Buch
-from produkte.elektronik import Elektronik
-from produkte.kleidung import Kleidung
+#from produkte.buch import Buch
+#from produkte.elektronik import Elektronik
+#from produkte.kleidung import Kleidung
+from produkte import Buch, Elektronik, Kleidung
+
 
 from storage.exceptions import (
     VerbindungsFehler,
@@ -96,7 +100,7 @@ def main():
         kunde.address = "Isfahan"
         db.update_customer(kunde)
         print("Aktualisierter Kunde:", db.load_customer_by_id(1))
-
+        '''
         #  Kunde löschen
         print("\n Lösche Kunde mit ID = 2...")
         db.delete_customer(2)
@@ -104,22 +108,25 @@ def main():
         #  Alle Kunden laden
         print("\n Alle verbleibenden Kunden:")
         kunden = db.load_all_customers()
-        for k in kunden:
-            print("-", k.name)
+        for kunde in kunden:
+            print(f"ID: {kunde.id} -> Name{kunde.name}")
+
 
         # ================================
         #  Ein Produkt mit Bewertung laden
         print("\n Lade Produkt mit Bewertung (ID = 1):")
-        produkt = db.load_product_with_rating(1)
+        produkt = db.load_product_with_rating(5)
         print(produkt)
         print("Durchschnittsbewertung:", produkt.average_rating())
 
         #  Alle Produkte mit Bewertung laden
         print("\n Alle Produkte mit Bewertung:")
         produkte = db.load_all_products_with_rating()
-        for p in produkte:
-            print("-", p.name, "| Ø:", round(p.average_rating(), 2))
-        '''
+        for prod in produkte:
+            print(f"ID: {prod.id} - {prod.name} --> " "Ø:", round(prod.average_rating(),2))
+
+            #print("-", p.name, "| Ø:", round(p.average_rating(), 2))
+
 
 
         #-----SpeicherFehler: Daten mit ungültigem Feld

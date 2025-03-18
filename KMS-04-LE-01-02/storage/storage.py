@@ -16,18 +16,20 @@ from storage.exceptions import (
 )
 
 # Kundenklassen
-from kunden.kunde import Kunde
-from kunden.privatkunde import Privatkunde
-from kunden.firmenkunde import Firmenkunde
+#from kunden.kunde import Kunde
+#from kunden.privatkunde import Privatkunde
+#from kunden.firmenkunde import Firmenkunde
+from kunden import Kunde,Privatkunde, Firmenkunde
 
 # Produktklassen
-from produkte.buch import Buch
-from produkte.elektronik import Elektronik
-from produkte.kleidung import Kleidung
+#from produkte.buch import Buch
+#from produkte.elektronik import Elektronik
+#from produkte.kleidung import Kleidung
+from produkte import Produkt, Elektronik, Buch, Kleidung
 
 
 class Storage:
-    # Constructor: Initialize the connection and cursor as None
+    # Constructor
     def __init__(self):
         self.conn = None
         self.cursor = None
@@ -371,7 +373,7 @@ class Storage:
         except mysql.connector.Error:
             raise SpeicherFehler()
 
-    # Load all products from the database (including specific details, no ratings)
+    # Load all products from the database
     def load_all_products(self):
         produkte = []
 
