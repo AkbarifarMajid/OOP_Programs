@@ -1,4 +1,3 @@
-#  Base for all products
 from abc import ABC, abstractmethod
 from utils.validator import Validator
 
@@ -7,7 +6,14 @@ class Produkt(ABC):
         self.name = name
         self.price = price
         self.weight = weight
-        self.reviews = []
+
+    @property
+    def id(self):
+        return self._id if hasattr(self, "_id") else None
+
+    @id.setter
+    def id(self, value):
+        self._id = value
 
     @property
     def name(self):
@@ -38,22 +44,6 @@ class Produkt(ABC):
         if not Validator.validate_weight(value):
             raise ValueError("Invalid weight.")
         self._weight = value
-
-    @property
-    def id(self):
-        return self._id if hasattr(self, "_id") else None
-
-    def add_review(self, rating):
-        if 1 <= rating <= 5:
-            self.reviews.append(rating)
-        else:
-            raise ValueError("Bewertung muss zwischen 1 und 5 liegen.")
-
-    def average_rating(self):
-        if not self.reviews:
-            return 0
-        return sum(self.reviews) / len(self.reviews)
-
     @abstractmethod
     def __str__(self):
         pass

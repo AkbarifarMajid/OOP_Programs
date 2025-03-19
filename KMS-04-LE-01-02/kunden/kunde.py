@@ -1,14 +1,8 @@
-
-
 from abc import ABC, abstractmethod
 from utils.validator import Validator
+from storage.storage import Storage
 
 class Kunde(ABC):
-    """
-    Abstrakte Basisklasse für alle Kundentypen.
-    Enthält gemeinsame Attribute und Validierung über Setter.
-    """
-
     def __init__(self, name, address, email, phone, password):
         self.name = name
         self.address = address
@@ -16,14 +10,14 @@ class Kunde(ABC):
         self.phone = phone
         self.password = password
 
-    # ----------------------------
-    # Read-only ID property
     @property
     def id(self):
         return self._id if hasattr(self, "_id") else None
 
-    # ----------------------------
-    # Name
+    @id.setter
+    def id(self, value):
+        self._id = value
+
     @property
     def name(self):
         return self._name
@@ -34,8 +28,6 @@ class Kunde(ABC):
             raise ValueError("Invalid name")
         self._name = value
 
-    # ----------------------------
-    # Adresse
     @property
     def address(self):
         return self._address
@@ -46,8 +38,6 @@ class Kunde(ABC):
             raise ValueError("Invalid address")
         self._address = value
 
-    # ----------------------------
-    # E-Mail
     @property
     def email(self):
         return self._email
@@ -58,8 +48,6 @@ class Kunde(ABC):
             raise ValueError("Invalid email address")
         self._email = value
 
-    # ----------------------------
-    # Telefon
     @property
     def phone(self):
         return self._phone
@@ -70,20 +58,20 @@ class Kunde(ABC):
             raise ValueError("Invalid phone number")
         self._phone = value
 
-    # ----------------------------
-    # Passwort
     @property
     def password(self):
         return self._password
 
     @password.setter
     def password(self, value):
-        if not value:
+        if not Validator.validate_address(value):
             raise ValueError("Password must not be empty")
         self._password = value
 
-    # ----------------------------
-    # Abstrakte Methode für Darstellung
     @abstractmethod
     def __str__(self):
         pass
+
+    @staticmethod
+    def delete_customer(db_kunde_id):
+        Storage.execute_query("DELETE FROM kunden WHERE id = %s", (db_kunde_id,))

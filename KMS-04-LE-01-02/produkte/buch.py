@@ -1,8 +1,6 @@
-#  Base class
 from produkte.produkt import Produkt
-
-#  Validator
-from utils.validator import Validator
+from storage.storage import Storage
+from storage.exceptions import DatenbankFehler, NichtGefundenFehler
 
 
 class Buch(Produkt):
@@ -11,29 +9,21 @@ class Buch(Produkt):
         self.author = author
         self.pages_count = pages_count
 
-    @property
-    def author(self):
-        return self._author
+    @staticmethod
+    def get_all_books():
+        try:
+            result = Storage.fetch_all("SELECT * FROM produkte_buch")
+            return result
+        except DatenbankFehler as e:
+            print("Fehler:", e)
+            return None
 
-    @author.setter
-    def author(self, value):
-        if not Validator.validate_author(value):
-            raise ValueError("Invalid author.")
-        self._author = value
+    @staticmethod
+    def get_book_by_id(id):
+        try:
+            result = Storage.fetch_one("SELECT * FROM produkte_buch WHERE id = %s", (id,))
+            return result
+        except DatenbankFehler as e:
+            print("Fehler:", e)
+            return None
 
-    @property
-    def pages_count(self):
-        return self._pages_count
-
-    @pages_count.setter
-    def pages_count(self, value):
-        if not Validator.validate_pages_count(value):
-            raise ValueError("Invalid page count.")
-        self._pages_count = value
-
-    def __str__(self):
-        return (
-            f"[Buch]\n"
-            f"ID: {self.id} | Titel: {self.name} | Preis: {self.price} € | Gewicht: {self.weight} kg\n"
-            f"Autor: {self.author} | Seiten: {self.pages_count}"
-        )

@@ -1,9 +1,6 @@
-#  Base class
 from produkte.produkt import Produkt
-
-#  Validator
-from utils.validator import Validator
-
+from storage.storage import Storage
+from storage.exceptions import DatenbankFehler
 
 class Elektronik(Produkt):
     def __init__(self, name, price, weight, brand, warranty_years):
@@ -11,29 +8,20 @@ class Elektronik(Produkt):
         self.brand = brand
         self.warranty_years = warranty_years
 
-    @property
-    def brand(self):
-        return self._brand
+    @staticmethod
+    def get_all_electronics():
+        try:
+            result = Storage.fetch_all("SELECT * FROM produkte_elektronik")
+            return result
+        except DatenbankFehler as e:
+            print("Fehler:", e)
+            return None
 
-    @brand.setter
-    def brand(self, value):
-        if not Validator.validate_brand(value):
-            raise ValueError("Invalid trademark.")
-        self._brand = value
-
-    @property
-    def warranty_years(self):
-        return self._warranty_years
-
-    @warranty_years.setter
-    def warranty_years(self, value):
-        if not Validator.validate_warranty_years(value):
-            raise ValueError("Invalid warranty period.")
-        self._warranty_years = value
-
-    def __str__(self):
-        return (
-            f"[Elektronik]\n"
-            f"ID: {self.id} | Name: {self.name} | Preis: {self.price} € | Gewicht: {self.weight} kg\n"
-            f"Marke: {self.brand} | Garantie: {self.warranty_years} Jahre"
-        )
+    @staticmethod
+    def get_electronic_by_id(id):
+        try:
+            result = Storage.fetch_one("SELECT * FROM produkte_elektronik WHERE id = %s", (id,))
+            return result
+        except DatenbankFehler as e:
+            print("Fehler:", e)
+            return None
