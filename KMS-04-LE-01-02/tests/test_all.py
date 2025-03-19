@@ -1,13 +1,55 @@
 from tests import Privatkunde, Firmenkunde, Buch, Elektronik, Kleidung, Storage, SpeicherFehler, VerbindungsFehler
 
+
 def main():
     try:
 
-        #--- Test: ADD Costumer
+
         '''
+        # Test: Bewertung für ein Buch
+        print("\nTest: Bewertung für Buch (ID=1)")
+        buch = Buch.get_book_by_id(1)
+        if buch:
+            buch.add_review(5)
+            buch.add_review(4)
+            avg = buch.average_rating()
+            print(f"Buch: {buch.name} | Ø Bewertung: {round(avg, 2)}")
+        else:
+            print("Buch nicht gefunden.")
+
+        # Test: Bewertung für Elektronik
+        print("\nTest: Bewertung für Elektronik (ID=4)")
+        elektro = Elektronik.get_electronic_by_id(4)
+        if elektro:
+            elektro.add_review(4)
+            elektro.add_review(3)
+            avg = elektro.average_rating()
+            print(f"Gerät: {elektro.name} | Ø Bewertung: {round(avg, 2)}")
+        else:
+            print("Elektronik nicht gefunden.")
+
+        # Test: Bewertung für Kleidung
+        print("\nTest: Bewertung für Kleidung (ID=7)")
+        kleid = Kleidung.get_clothing_by_id(7)
+        if kleid:
+            kleid.add_review(5)
+            kleid.add_review(5)
+            avg = kleid.average_rating()
+            print(f"Kleidung: {kleid.name} | Ø Bewertung: {round(avg, 2)}")
+        else:
+            print("Kleidungsstück nicht gefunden.")
+        '''
+
+
+
+
+
+        '''
+        #--- Test: ADD Costumer
+
         kunde_id = Firmenkunde.create_customer(
-            "Tida Akbarifar", "Feldkirkhen bei garz", "maryamjalali@gmail.com",
-            "+989123456789", "sada201", "222500"
+            "ztzrz tzrzr", "dfgdg gfdfgfdg ", "",
+            "+989123456789", "", "56564"
         )
         print("Neuer Privatkunde wurde gespeichert. ID:", kunde_id)
         '''

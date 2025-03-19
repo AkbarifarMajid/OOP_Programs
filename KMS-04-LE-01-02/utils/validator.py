@@ -39,7 +39,11 @@ class Validator:
     def validate_company_number(company_number):
         return isinstance(company_number, str) and company_number.isdigit() and 5 <= len(company_number) <= 15
 
-    # -------- Produkte --------
+    @staticmethod
+    def validate_password(password):
+        return isinstance(password, str)  and 3 <= len(password) <= 8
+
+        # -------- Produkte --------
 
     @staticmethod
     def validate_product_name(name):

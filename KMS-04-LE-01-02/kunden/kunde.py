@@ -64,14 +64,16 @@ class Kunde(ABC):
 
     @password.setter
     def password(self, value):
-        if not Validator.validate_address(value):
-            raise ValueError("Password must not be empty")
+        if not Validator.validate_password(value):
+            raise ValueError("Ungültiges Passwort.")
         self._password = value
 
     @abstractmethod
     def __str__(self):
         pass
 
+    '''
     @staticmethod
     def delete_customer(db_kunde_id):
         Storage.execute_query("DELETE FROM kunden WHERE id = %s", (db_kunde_id,))
+    '''
