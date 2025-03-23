@@ -1,5 +1,6 @@
-from warenkorb.warenkorb import Warenkorb
-from tests import Privatkunde, Firmenkunde, Buch, Elektronik, Kleidung, Storage, SpeicherFehler, VerbindungsFehler
+
+from tests import Privatkunde, Firmenkunde, Buch, Elektronik, Kleidung, Storage, SpeicherFehler, VerbindungsFehler,Warenkorb, Bestellung
+from versand.versand_service import VersandService
 
 
 def main():
@@ -86,6 +87,70 @@ def main():
             print(" Kunde konnte nicht erstellt werden.")
 
         '''
+
+
+        '''
+        #--------------------- Bestellung test ----------------
+       
+        print("\n Test: Bestellung erstellen...")
+
+        #  Kunde laden
+        kunde = Firmenkunde.get_firma_by_id(9)  # Stelle sicher, dass ID 1 existiert
+
+        # 🛍 Produkte laden
+        buch = Buch.get_book_by_id(13)
+        elektro = Kleidung.get_clothing_by_id(10)
+
+        #  Warenkorb erstellen und Produkte hinzufügen
+        wk = Warenkorb(kunde)
+        wk.produkt_hinzufuegen(buch)
+        wk.produkt_hinzufuegen(elektro)
+
+        #  Bestellung erstellen (nur Produktliste wird übergeben)
+        bestellung = Bestellung(kunde, wk.produkte)
+
+        #  Kontrolle vor dem Speichern
+        print(" Produkt-IDs im Warenkorb:")
+        print(f" Kunde-ID: {kunde.id}")
+        for p in wk.produkte:
+            print(f" - {p.name}, ID: {p.id}")
+
+        #  Bestellung speichern
+        rechnung = bestellung.erstelle_rechnung()
+
+        #  Rückmeldung
+        if rechnung:
+            print("Bestellung erfolgreich gespeichert. Bestell-ID:", rechnung)
+            print(bestellung)
+        else:
+            print(" Fehler beim Speichern der Bestellung.")
+        '''
+
+
+        # --------------------- Versand Test ----------------
+        print("\nTest: Versandkosten berechnen...")
+
+
+        kunde = Privatkunde.get_privat_by_id(3)
+        elek1= Elektronik.get_electronic_by_id(5)
+        elek2 = Elektronik.get_electronic_by_id(16)
+
+
+        wk = Warenkorb(kunde)
+        wk.produkt_hinzufuegen(elek1)
+        wk.produkt_hinzufuegen(elek2)
+
+
+        # Bestellung mit Versand
+        lieferart = "Expressversand"
+        bestellung = Bestellung(kunde, wk.produkte, lieferart)
+
+        # Rechnung erstellen
+        bestell_id = bestellung.erstelle_rechnung()
+
+        # Ausgabe
+        print(f"\nBestellung erfolgreich gespeichert mit ID: {bestell_id}")
+        print(bestellung)
 
 
 

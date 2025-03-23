@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Produkte - WarenWelt</title>
+</head>
+<body>
+    <h2>Produktliste</h2>
+
+    {% for produkt in produkte %}
+        <div>
+            <h4>{{ produkt['name'] }} - {{ produkt['price'] }} €</h4>
+            <p>Typ: {{ produkt['typ'] }}</p>
+        </div>
+        <hr>
+    {% endfor %}
+</body>
+</html>
