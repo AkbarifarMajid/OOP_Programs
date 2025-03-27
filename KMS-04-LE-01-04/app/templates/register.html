@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrierung – WarenWelt</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">&#128221; Registrierung</h4>
+                </div>
+                <div class="card-body">
+
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+
+                    <form method="POST">
+                        <div class="row mb-3">
+                            <div class="col">
+                                <label class="form-label">Name</label>
+                                <input type="text" name="name"
+                                       class="form-control {% if error and 'Name' in error %}is-invalid{% endif %}"
+                                       value="{{ form_data.name if form_data else '' }}">
+                            </div>
+                            <div class="col">
+                                <label class="form-label">Adresse</label>
+                                <input type="text" name="adresse"
+                                       class="form-control {% if error and 'Adresse' in error %}is-invalid{% endif %}"
+                                       value="{{ form_data.adresse if form_data else '' }}">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">E-Mail</label>
+                            <input type="email" name="email"
+                                   class="form-control {% if error and ('E-Mail' in error or 'registriert' in error) %}is-invalid{% endif %}"
+                                   value="{{ form_data.email if form_data else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Telefonnummer</label>
+                            <input type="text" name="telefon"
+                                   class="form-control {% if error and 'Telefon' in error %}is-invalid{% endif %}"
+                                   value="{{ form_data.telefon if form_data else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Passwort</label>
+                            <input type="password" name="passwort"
+                                   class="form-control {% if error and 'Passwort' in error %}is-invalid{% endif %}">
+                        </div>
+
+                        <div class="mb-3" id="geburtsdatum_feld">
+                            <label class="form-label">Geburtsdatum</label>
+                            <input type="date" name="geburtsdatum"
+                                   class="form-control {% if error and 'Geburtsdatum' in error %}is-invalid{% endif %}"
+                                   value="{{ form_data.geburtsdatum if form_data else '' }}">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Kundentyp</label><br>
+                            <input type="radio" name="typ" value="privat"
+                                   {% if not form_data or form_data.typ =='privat' %}checked{% endif %}> Privatkunde
+                            <input type="radio" name="typ" value="firma"
+                                   class="ms-3" {% if form_data and form_data.typ =='firma' %}checked{% endif %}> Firmenkunde
+                        </div>
+
+                        <div class="mb-3" id="firma_feld" style="display: none;">
+                            <label class="form-label">Firmenbuchnummer</label>
+                            <input type="text" name="firmenbuchnummer"
+                                   class="form-control {% if error and 'Firmenbuchnummer' in error %}is-invalid{% endif %}"
+                                   value="{{ form_data.firmenbuchnummer if form_data else '' }}">
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">&#128994; Registrieren</button>
+                    </form>
+
+                    <div class="mt-3 text-center">
+                        Bereits registriert? <a href="/login">Jetzt einloggen</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const radios = document.getElementsByName("typ");
+    const firmaFeld = document.getElementById("firma_feld");
+    const geburtFeld = document.getElementById("geburtsdatum_feld");
+
+    function toggleFields() {
+        const typ = document.querySelector('input[name="typ"]:checked').value;
+        if (typ === "firma") {
+            firmaFeld.style.display = "block";
+            geburtFeld.style.display = "none";
+        } else {
+            firmaFeld.style.display = "none";
+            geburtFeld.style.display = "block";
+        }
+    }
+
+    radios.forEach(r => r.addEventListener("change", toggleFields));
+    window.onload = toggleFields;
+</script>
+
+</body>
+</html>
