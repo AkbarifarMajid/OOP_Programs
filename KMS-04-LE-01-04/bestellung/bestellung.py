@@ -1,51 +1,54 @@
 from datetime import datetime
 from storage.storage import Storage
 from kunden.firmenkunde import Firmenkunde
-from versand.versand_service import VersandService  # ⬅️ اضافه شده
+from versand.versand_service import VersandService
+from zahlung.zahlung import Zahlung
+
 
 class Bestellung:
-    def __init__(self, kunde, produkte, lieferart="Standardversand"):
+    def __init__(self, kunde, produkte, zahllung, lieferart="Standardversand"):
         self.kunde = kunde
         self.produkte = produkte
-        self.lieferart = lieferart  # فقط برای محاسبه، ذخیره نمی‌کنیم
+        self.zahllung = zahllung
+        self.lieferart = lieferart
         self.bestellzeitpunkt = datetime.now()
-        self.gesamtbetrag = self.berechne_gesamtbetrag()
+        self.gesamt_anzahl = sum(getattr(p, "anzahl", 1) for p in self.produkte)
+        self.versand = VersandService(self.produkte)
+        self.versandkosten = self.versand.berechne_versandkosten(self.lieferart)
 
+        # حالا با متد اختصاصی همه چیز محاسبه می‌شود
+        self.berechne_gesamtbetrag()
 
     def berechne_gesamtbetrag(self):
-        # قیمت اولیه محصولات
-        gesamt = sum(p.price for p in self.produkte)
+        self.bruttosumme = sum(p.price * getattr(p, "anzahl", 1) for p in self.produkte)
+        self.rabatt = 0
 
-        # اعمال تخفیف ۵٪ برای Firmenkunde
-        if isinstance(self.kunde, Firmenkunde):
-            gesamt *= 0.95
+        # بررسی تخفیف مشتری شرکتی
+        if hasattr(self.kunde, "kundentyp") and self.kunde.kundentyp == "firma":
+            self.rabatt = round(self.bruttosumme * 0.05, 2)
 
-        # محاسبه هزینه‌ی ارسال
-        versand = VersandService(self.produkte)
-        versandkosten = versand.berechne_versandkosten(self.lieferart)
+        self.gesamtbetrag = round(self.bruttosumme - self.rabatt, 2)
 
-        # جمع نهایی
-        gesamt += versandkosten
-        return round(gesamt, 2)
 
     def erstelle_rechnung(self):
         bestell_id = Storage.insert_and_get_id(
             """
-            INSERT INTO bestellungen (kunde_id, bestellzeitpunkt, gesamtbetrag)
-            VALUES (%s, %s, %s)
+            INSERT INTO bestellungen (kunde_id, bestellzeitpunkt, gesamtbetrag, zahllung_id)
+            VALUES (%s, %s, %s, %s)
             """,
-            (self.kunde.id, self.bestellzeitpunkt, self.gesamtbetrag)
+            (self.kunde.id, self.bestellzeitpunkt, self.gesamtbetrag, self.zahllung.id)
         )
 
         for produkt in self.produkte:
             Storage.execute_query(
                 """
-                INSERT INTO bestellpositionen (bestell_id, produkt_id, preis)
-                VALUES (%s, %s, %s)
+                INSERT INTO bestellpositionen (bestell_id, produkt_id, preis, anzahl)
+                VALUES (%s, %s, %s, %s)
                 """,
-                (bestell_id, produkt.id, produkt.price)
+                (bestell_id, produkt.id, produkt.price, getattr(produkt, "anzahl", 1))
             )
 
+        self.bestell_id = bestell_id
         return bestell_id
 
     def __str__(self):

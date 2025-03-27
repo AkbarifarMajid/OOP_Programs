@@ -40,31 +40,38 @@ class Kleidung(Produkt):
             raise ValueError("Invalid color.")
         self._color = value
 
-    # Load alle Clothes from Datenbank
     @staticmethod
     def get_all_clothing():
-        return  Storage.fetch_all("SELECT * FROM produkte_kleidung")
-
-    # Load one Clothes from Datenbank bei ID
-    #@staticmethod
-    #def get_clothing_by_id(id):
-       # return Storage.fetch_one("SELECT * FROM produkte_kleidung WHERE id = %s", (id,))
+        query = '''
+            SELECT p.id, p.name, p.price, p.weight, k.size, k.color
+            FROM produkte p
+            JOIN produkte_kleidung k ON p.id = k.id
+            WHERE p.kategorie = 'kleidung'
+        '''
+        return Storage.fetch_all(query)
 
     @staticmethod
     def get_clothing_by_id(id):
-        row = Storage.fetch_one("SELECT * FROM produkte_kleidung WHERE id = %s", (id,))
+        query = '''
+            SELECT p.id, p.name, p.price, p.weight, k.size, k.color
+            FROM produkte p
+            JOIN produkte_kleidung k ON p.id = k.id
+            WHERE p.id = %s AND p.kategorie = 'kleidung'
+        '''
+        return Storage.fetch_one(query, (id,))
+'''
+    @staticmethod
+    def load_by_id(id):
+        row = Kleidung.get_clothing_by_id(id)
         if not row:
             return None
-
-        produkt_id, size, color = row
-
-        base = Storage.fetch_one(
-            "SELECT name, price, weight FROM produkte WHERE id = %s AND kategorie = 'kleidung'", (id,)
+        kleidung = Kleidung(
+            name=row[1],
+            price=row[2],
+            weight=row[3],
+            size=row[4],
+            color=row[5]
         )
-        if not base:
-            return None
-
-        name, price, weight = base
-        k = Kleidung(name, price, weight, size, color)
-        k.id = id
-        return k
+        kleidung.id = row[0]
+        return kleidung
+'''

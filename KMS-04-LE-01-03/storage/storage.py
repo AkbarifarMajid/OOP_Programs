@@ -41,7 +41,7 @@ class Storage:
             cls.connect()
             cls._cursor.execute(query, params)
             cls._conn.commit()
-        except mysql.connector.Error:
+        except mysql.connector.Error :
             raise SpeicherFehler()
 
     @classmethod

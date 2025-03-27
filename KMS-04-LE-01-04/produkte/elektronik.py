@@ -40,32 +40,38 @@ class Elektronik(Produkt):
             raise ValueError("Invalid warranty duration.")
         self._warranty_years = value
 
-    # Load alle Elektronik from Datenbank
     @staticmethod
     def get_all_electronics():
-        return  Storage.fetch_all("SELECT * FROM produkte_elektronik")
-
-    # Load one Elektronik from Datenbank bei ID
-    #@staticmethod
-    #def get_electronic_by_id(id):
-        #return Storage.fetch_one("SELECT * FROM produkte_elektronik WHERE id = %s", (id,))
+        query = '''
+            SELECT p.id, p.name, p.price, p.weight, e.brand, e.warranty_years
+            FROM produkte p
+            JOIN produkte_elektronik e ON p.id = e.id
+            WHERE p.kategorie = 'elektronik'
+        '''
+        return Storage.fetch_all(query)
 
     @staticmethod
     def get_electronic_by_id(id):
-        row = Storage.fetch_one("SELECT * FROM produkte_elektronik WHERE id = %s", (id,))
+        query = '''
+            SELECT p.id, p.name, p.price, p.weight, e.brand, e.warranty_years
+            FROM produkte p
+            JOIN produkte_elektronik e ON p.id = e.id
+            WHERE p.id = %s AND p.kategorie = 'elektronik'
+        '''
+        return Storage.fetch_one(query, (id,))
+'''
+    @staticmethod
+    def load_by_id(id):
+        row = Elektronik.get_electronic_by_id(id)
         if not row:
             return None
-
-        produkt_id, brand, warranty_years = row
-
-        base = Storage.fetch_one(
-            "SELECT name, price, weight FROM produkte WHERE id = %s AND kategorie = 'elektronik'",
-            (id,)
+        elektronik = Elektronik(
+            name=row[1],
+            price=row[2],
+            weight=row[3],
+            brand=row[4],
+            warranty_years=row[5]
         )
-        if not base:
-            return None
-
-        name, price, weight = base
-        e = Elektronik(name, price, weight, brand, warranty_years)
-        e.id = id
-        return e
+        elektronik.id = row[0]
+        return elektronik
+'''

@@ -31,10 +31,11 @@ class Firmenkunde(Kunde):
             print("Ein Kunde mit dieser E-Mail existiert bereits.")
             return None
 
-        #  Validierung der Eingabedaten
-        _ = Firmenkunde(name, address, email, phone, password, company_number)
+        # Objekt erstellen
+        kunde = Firmenkunde(name, address, email, phone, password, company_number)
+        kunde.kundentyp = "firma"  # ✅ بسیار مهم برای تخفیف
 
-        #  In Haupttabelle einfügen
+        # In Haupttabelle einfügen
         query1 = """
             INSERT INTO kunden (name, address, email, phone, password, kundentyp)
             VALUES (%s, %s, %s, %s, %s, 'firma')
@@ -45,7 +46,8 @@ class Firmenkunde(Kunde):
         query2 = "INSERT INTO firmenkunden (id, company_number) VALUES (%s, %s)"
         Storage.execute_query(query2, (kunde_id, company_number))
 
-        return kunde_id
+        kunde.id = kunde_id
+        return kunde
 
     #Loads all entries from the 'firmenkunden' table
     @staticmethod
@@ -86,6 +88,7 @@ class Firmenkunde(Kunde):
         name, address, email, phone, password = base
         kunde = Firmenkunde(name, address, email, phone, password, company_number)
         kunde.id = kunde_id
+        kunde.kundentyp = "firma"
         return kunde
 
     # Updates the information of an existing Firmenkunde in the database.
@@ -104,53 +107,3 @@ class Firmenkunde(Kunde):
     def delete_customer(db_kunde_id):
         Storage.execute_query("DELETE FROM kunden WHERE id = %s", (db_kunde_id,))
 
-    '''
-    @staticmethod
-    def load_customer_by_id(kunde_id):
-        try:
-            # اطلاعات پایه از جدول 'kunden'
-            row = Storage.fetch_one(
-                "SELECT * FROM kunden WHERE id = %s AND kundentyp = 'firma'", (kunde_id,)
-            )
-            if not row:
-                return None
-
-            _, name, address, email, phone, password, _ = row
-
-            # اطلاعات اضافی از جدول 'firmenkunden'
-            firm_row = Storage.fetch_one(
-                "SELECT company_number FROM firmenkunden WHERE id = %s", (kunde_id,)
-            )
-            if not firm_row:
-                return None
-
-            kunde = Firmenkunde(name, address, email, phone, password, firm_row[0])
-            kunde.id = kunde_id  # انتساب شناسه
-            return kunde
-
-        except DatenbankFehler as e:
-            print("Fehler beim Laden des Firmenkunden:", e)
-            return None
-            
-            
-            
-   @staticmethod
-    def edit_customer(kunde_id, name, address, email, phone, password, company_number):
-        try:
-            # Update in main table
-            query1 = """
-                UPDATE kunden
-                SET name = %s, address = %s, email = %s, phone = %s, password = %s
-                WHERE id = %s
-            """
-            Storage.execute_query(query1, (name, address, email, phone, password, kunde_id))
-    
-            # Update in sub-table
-            query2 = "UPDATE firmenkunden SET company_number = %s WHERE id = %s"
-            Storage.execute_query(query2, (company_number, kunde_id))
-    
-            print(f"Firmenkunde mit ID {kunde_id} wurde aktualisiert.")
-        except SpeicherFehler as e:
-            print("Fehler beim Aktualisieren des Firmenkunden:", e)
-         
-    '''

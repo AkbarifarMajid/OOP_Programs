@@ -21,7 +21,7 @@ class Storage:
                     password="Akbarifar6503",
                     database="online_shop_warenwelt_2"
                 )
-                cls._cursor = cls._conn.cursor()
+                cls._cursor = cls._conn.cursor(buffered=True)
                 print("-- connect --")
             except mysql.connector.Error:
                 raise VerbindungsFehler()

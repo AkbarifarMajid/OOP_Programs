@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Rechnung</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+    @media print {
+        nav, .btn, .alert, a[href] {
+            display: none !important;
+                }
+            }
+</style>
+
+</head>
+<body>
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="text-success">WarenWelt-Graz</h1>
+        <p class="lead">Vielen Dank für Ihre Bestellung, {{ bestellung.kunde.name }}.</p>
+        <p>&#129534; Bestellnummer: <strong>{{ bestellung.bestell_id }}</strong></p>
+        <p>&#128100; Kundennummer: <strong>{{ bestellung.kunde.id }}</strong></p>
+        <p>Bestelldatum: <strong>{{ bestellung.bestellzeitpunkt.strftime('%d.%m.%Y %H:%M') }}</strong></p>
+    </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">&#129534; Ihre Rechnung</h4>
+        </div>
+        <div class="card-body">
+            <ul class="list-group list-group-flush mb-3">
+                {% for p in bestellung.produkte %}
+                    {% set gesamt_produkt = p.price * p.anzahl %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <span>{{ p.anzahl }} × {{ p.name }}</span>
+                        <span>{{ "%.2f"|format(gesamt_produkt) }} €</span>
+                    </li>
+                {% endfor %}
+            </ul>
+
+            <div class="mb-2 d-flex justify-content-between">
+                <span>&#129534; Bruttosumme (ohne Rabatt):</span>
+                <span>{{ "%.2f"|format(bestellung.bruttosumme) }} €</span>
+            </div>
+
+            {% if bestellung.rabatt > 0 %}
+                <div class="mb-2 d-flex justify-content-between text-success">
+                    <span>&#127873; Firmenrabatt (5%):</span>
+                    <span>-{{ "%.2f"|format(bestellung.rabatt) }} €</span>
+                </div>
+            {% endif %}
+
+            <div class="mb-2 d-flex justify-content-between">
+                <span>&#128666; Versandkosten:</span>
+                <span>{{ "%.2f"|format(bestellung.versandkosten) }} €</span>
+            </div>
+
+            <div class="fw-bold d-flex justify-content-between border-top pt-2">
+                <span>&#128179; Gesamtbetrag (inkl. Versand):</span>
+                <span>{{ "%.2f"|format(bestellung.gesamtbetrag + bestellung.versandkosten) }} €</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="alert alert-info">
+                &#128179; <strong>Zahlungsart:</strong> {{ bestellung.zahllung.methode }}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="alert alert-info">
+                &#128666; <strong>Versandart:</strong> {{ bestellung.lieferart }}
+            </div>
+        </div>
+    </div>
+        <div class="text-center mt-3">
+            <button onclick="window.print()" class="btn btn-outline-success">
+                &#128424; Rechnung drucken
+            </button>
+        </div>
+
+    <div class="text-center mt-4">
+        <a href="/produkte" class="btn btn-outline-primary">
+            &#128717; Zurück zu den Produkten
+        </a>
+
+
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

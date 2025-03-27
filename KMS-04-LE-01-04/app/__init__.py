@@ -1,8 +1,9 @@
-# app/__init__.py
+# Initialisiert die Flask-App, setzt den geheimen Schlüssel und lädt die
 
 from flask import Flask
 
 app = Flask(__name__)
-app.secret_key = "geheime_schluessel"  # برای Session و Flash پیام‌ها
+app.secret_key = "Akbarifar6503"
 
-from app import routes  # به فایل آدرس‌ها اشاره می‌کنه
+# zeigt auf die Adressdatei
+from app import routes

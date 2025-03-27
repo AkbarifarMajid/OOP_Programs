@@ -1,17 +1,129 @@
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
-    <title>Produkte - WarenWelt</title>
+    <meta charset="UTF-8">
+    <title>Produkte</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h2>Produktliste</h2>
-
-    {% for produkt in produkte %}
-        <div>
-            <h4>{{ produkt['name'] }} - {{ produkt['price'] }} €</h4>
-            <p>Typ: {{ produkt['typ'] }}</p>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+        <div class="container-fluid">
+            <a class="navbar-brand text-danger fw-bold" href="/">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height:100px;">
+            </a>
+            <div class="d-flex justify-content-between w-100">
+                <div>
+                    <a class="nav-link d-inline" href="/">Startseite</a>
+                    <a class="nav-link d-inline" href="/produkte">&#128717; Produkte</a>
+                </div>
+                <div>
+                    <a class="nav-link d-inline" href="/warenkorb">&#128722; Warenkorb</a>
+                    <a class="nav-link d-inline" href="/logout">&#128682;  Abmelden</a>
+                    <span class="fw-bold">{{ user_email }}</span>
+                </div>
+            </div>
         </div>
-        <hr>
-    {% endfor %}
+    </nav>
+
+    <!-- Header -->
+    <div class="position-relative mb-5">
+        <img src="{{ url_for('static', filename='images/produkte_header.jpg') }}" class="img-fluid w-100" style="height: 250px; object-fit: cover; filter: brightness(70%);">
+
+        <div class="position-absolute top-50 start-50 translate-middle text-white fw-bold text-shadow text-center fs-4">
+            <span style="font-size: 1.5em;">&#128075; Hallo</span> <strong>{{ name }}</strong>! <br>
+            <p style="font-size: 1.3em;">Sie sind: <strong>{{ typ|capitalize }}</strong> Kunde</p>
+        </div>
+
+    </div>
+
+    <div class="container">
+        <form method="get" action="{{ url_for('produkte_anzeigen') }}" class="d-flex gap-3 mb-4 align-items-center">
+            <div>
+                <label class="form-label fw-bold">&#128194; Kategorie:</label>
+                <select name="kategorie" onchange="this.form.submit()" class="form-select w-auto d-inline-block ms-2">
+                    <option value="">Alle</option>
+                    <option value="Buch" {% if kategorie =='Buch' %}selected{% endif %}>Bücher</option>
+                    <option value="Elektronik" {% if kategorie =='Elektronik' %}selected{% endif %}>Elektronik</option>
+                    <option value="Kleidung" {% if kategorie =='Kleidung' %}selected{% endif %}>Kleidung</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="form-label fw-bold">&#128259; Sortieren:</label>
+                <select name="sortierung" onchange="this.form.submit()" class="form-select w-auto d-inline-block ms-2">
+                    <option value="">ALS</option>
+                    <option value="preis_auf" {% if sortierung =='preis_auf' %}selected{% endif %}>Preis &#11014;</option>
+                    <option value="preis_ab" {% if sortierung =='preis_ab' %}selected{% endif %}>Preis &#11015;	</option>
+                    <option value="name_auf" {% if sortierung =='name_auf' %}selected{% endif %}>Name A-Z &#128221;	</option>
+                    <option value="name_ab" {% if sortierung =='name_ab' %}selected{% endif %}>Name Z-A &#128203;	</option>
+                </select>
+            </div>
+        </form>
+
+        {% set kategorien = ['Buch', 'Elektronik', 'Kleidung'] %}
+        {% for kat in kategorien %}
+            {% if not kategorie or kategorie == kat %}
+                <h2 class="mb-4 border-start border-4 border-primary ps-3">{{ kat == 'Buch' and 'Bücher' or kat}}</h2>
+                <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 mb-5">
+                    {% for produkt in produkte if produkt['typ'] == kat %}
+                        <div class="col">
+                        <div class="card h-100 shadow-sm
+                            {% if produkt['typ'] == 'Buch' %}bg-light
+                            {% elif produkt['typ'] == 'Elektronik' %}bg-warning-subtle
+                            {% elif produkt['typ'] == 'Kleidung' %}bg-info-subtle
+                            {% endif %}"
+                            id="produkt-{{ produkt.id }}">
+
+                                <div class="card-body">
+                                    <h5 class="card-title text-primary">{{ produkt['name'] }} – {{ produkt['price'] }} €</h5>
+                                    <p class="card-text mb-1"><strong>Typ:</strong> {{ produkt['typ'] }}</p>
+                                    <p class="card-text mb-1">{{ produkt['extra'] }}</p>
+
+                                    <p class="text-warning mb-1">
+                                        {% for i in range(1, 6) %}
+                                            {% if i <= produkt['rating']|round(0, 'floor') %}★{% else %}☆{% endif %}
+                                        {% endfor %}
+                                        <small class="text-muted">({{ produkt['anzahl_bewertungen'] }} Bewertungen)</small>
+                                    </p>
+
+                                    <form method="POST" action="{{ url_for('bewerten') }}#produkt-{{ produkt.id }}" class="mt-2">
+                                        <input type="hidden" name="produkt_id" value="{{ produkt['id'] }}">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <select name="rating" class="form-select form-select-sm w-auto">
+                                                <option value="5">&#11088;&#11088;&#11088;&#11088;&#11088;</option>
+                                                <option value="4">&#11088;&#11088;&#11088;&#11088;</option>
+                                                <option value="3">&#11088;&#11088;&#11088;</option>
+                                                <option value="2">&#11088;&#11088;</option>
+                                                <option value="1">&#11088;</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-outline-secondary btn-sm">Bewerten</button>
+                                        </div>
+                                    </form>
+
+
+
+                                    <form method="POST" action="{{ url_for('add_to_cart') }}">
+                                        <input type="hidden" name="name" value="{{ produkt['name'] }}">
+                                        <input type="hidden" name="price" value="{{ produkt['price'] }}">
+                                        <input type="hidden" name="typ" value="{{ produkt['typ'] }}">
+                                        <input type="hidden" name="kategorie" value="{{ kategorie }}">
+                                        <input type="hidden" name="sortierung" value="{{ sortierung }}">
+                                        <button type="submit" class="btn btn-primary w-100 mt-2">Zum Warenkorb hinzufügen</button>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

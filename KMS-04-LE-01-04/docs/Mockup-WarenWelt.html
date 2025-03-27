@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Mockup – WarenWelt</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 60px;
+        }
+        .section h2 {
+            border-bottom: 2px solid #ccc;
+            padding-bottom: 5px;
+            margin-bottom: 20px;
+        }
+        .navbar, .form, .card, .table {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .buch { background-color: #f1f1f1; }
+        .elektronik { background-color: #fff9e6; }
+        .kleidung { background-color: #e6f7ff; }
+        .rating { color: #ffc107; }
+        .title { font-size: 18px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div style="background-color:#e6f7ff; border-left: 5px solid #1890ff; padding: 15px; margin: 20px 0;">
+  <strong>&#128640; Startseite = Login &rarr; Produkte</strong><br>
+  Nach dem erfolgreichen Login wird der Benutzer automatisch zur Produktseite weitergeleitet.<br>
+  Dort erscheint eine <strong>Willkommensnachricht</strong> mit seinem Namen.<br>
+  <strong>&#9989; Registrierung ist aktiviert</strong> und erlaubt neuen Nutzern den Zugang zum Shop.
+</div>
+
+
+<div class="section">
+    <h2>🔐 Startseite</h2>
+    <div class="navbar">
+        Willkommen zurück, [user@example.com]! | Startseite | Produkte | 🛒 Warenkorb | Abmelden
+    </div>
+</div>
+
+<div class="section">
+    <h2>📝 Registrierung</h2>
+    <div class="form">
+        <p><strong>Felder:</strong> Name, Adresse, E-Mail, Telefonnummer, Passwort, Geburtsdatum oder Firmenbuchnummer</p>
+        <p><strong>Typ:</strong> Privatkunde oder Firmenkunde (Optional)</p>
+        <p>✔ Validierung für E-Mail, Passwort, Telefonnummer usw.</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2>🛍️ Produkte </h2>
+
+    <h3 class="title">📚 Bücher</h3>
+    <div class="card buch">
+        <p><strong>Clean Code</strong> – 35.00 €<br>Autor: Robert C. Martin, Seiten: 464</p>
+        <p class="rating">★★★★☆ (15 Bewertungen)</p>
+    </div>
+
+    <h3 class="title">🔌 Elektronik</h3>
+    <div class="card elektronik">
+        <p><strong>Smartphone X12</strong> – 699.99 €<br>Marke: Samsung, Volt: 5V</p>
+        <p class="rating">★★★☆☆ (22 Bewertungen)</p>
+    </div>
+
+    <h3 class="title">👕 Kleidung</h3>
+    <div class="card kleidung">
+        <p><strong>Winterjacke</strong> – 149.99 €<br>Größe: L, Farbe: Schwarz</p>
+        <p class="rating">★★★★★ (5 Bewertungen)</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2>🧺 Warenkorb </h2>
+    <div class="table">
+        <p><strong>Produkte:</strong> Liste der ausgewählten Artikel mit Preis und Anzahl</p>
+        <p>✅ Möglichkeit zur Bearbeitung, Löschen, oder Alles löschen</p>
+        <p>✅ Auswahl von Lieferart und Zahlungsmethode</p>
+    </div>
+</div>
+
+<div class="section">
+    <h2>🧾 Rechnung </h2>
+    <div class="card">
+        <p><strong>Kunde:</strong> Majid Akbarifar<br><strong>Zahlung:</strong> Kreditkarte<br><strong>Versand:</strong> Standardversand</p>
+        <p><strong>Produkte:</strong></p>
+        <ul>
+            <li>2 × Clean Code – 70.00 €</li>
+            <li>1 × Smartphone – 699.99 €</li>
+        </ul>
+        <p>📦 Versandkosten: 5.00 €</p>
+        <p>💸 Rabatt Firmenkunde: -5%</p>
+        <p><strong>💳 Gesamtbetrag: 731.49 €</strong></p>
+    </div>
+</div>
+
+<div class="section">
+    <h2>⭐ Bewertung</h2>
+    <div class="form">
+        <p>✅ Benutzer können für jedes Produkt nur einmal abstimmen.</p>
+        <p>✅ Abstimmungsformular mit Sternen und Eintragung in die Bewertungstabelle</p>
+    </div>
+</div>
+
+</body>
+</html>

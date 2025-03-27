@@ -1,4 +1,4 @@
-# versand/versand_service.py
+# This class handles shipping options and calculates shipping costs
 
 class VersandService:
     def __init__(self, produkte):
@@ -11,7 +11,8 @@ class VersandService:
         self.produkte = produkte
         self.gesamtgewicht = self.berechne_gesamtgewicht()
         self.versandkosten = 0.0
-
+    '''
+    # Let the user choose a delivery option
     def lieferung_auswahl(self):
         print("\nVerfügbare Lieferoptionen:")
         for i, option in enumerate(self.lieferoptionen, 1):
@@ -24,11 +25,13 @@ class VersandService:
                 raise ValueError("Ungültige Auswahl")
         except ValueError:
             raise ValueError("Bitte eine gültige Zahl eingeben!")
-
+    '''
+    # Calculate total weight of all products
     def berechne_gesamtgewicht(self):
         # Gesamtgewicht aus allen Produkten berechnen
         return sum(getattr(p, 'weight', 0) for p in self.produkte)
 
+    # Calculate shipping cost based on chosen delivery method
     def berechne_versandkosten(self, methode):
         # Versandkosten nach Methode berechnen
         kosten_faktoren = {

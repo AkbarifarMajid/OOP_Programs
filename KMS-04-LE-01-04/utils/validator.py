@@ -15,17 +15,17 @@ class Validator:
 
     @staticmethod
     def validate_address(address):
-        return isinstance(address, str) and len(address.strip()) > 3
+        return isinstance(address, str) and len(address.strip()) > 5
 
     @staticmethod
     def validate_email(email):
-        pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        return isinstance(email, str) and re.match(pattern, email) is not None
+        return isinstance(email, str) and "@" in email and "." in email
 
     @staticmethod
     def validate_phone(phone):
-        pattern = r'^\+?[0-9\s\-]{7,20}$'
-        return isinstance(phone, str) and re.match(pattern, phone) is not None
+
+        return isinstance(phone, str) and re.fullmatch(r"^\+?\d{7,15}$", phone)
+
 
     @staticmethod
     def validate_birthdate(birthdate):
@@ -43,7 +43,7 @@ class Validator:
 
     @staticmethod
     def validate_password(password):
-        return isinstance(password, str) and len(password) >= 6
+        return isinstance(password, str) and len(password) >= 4
 
         # -------- Produkte --------
 
@@ -82,3 +82,13 @@ class Validator:
     @staticmethod
     def validate_color(color):
         return isinstance(color, str) and len(color.strip()) >= 2
+    @staticmethod
+    def validate_register(name, adresse, email, telefon, passwort, geburtsdatum):
+        return (
+            Validator.validate_name(name) and
+            Validator.validate_address(adresse) and
+            Validator.validate_email(email) and
+            Validator.validate_phone(telefon) and
+            Validator.validate_password(passwort) and
+            Validator.validate_birthdate(geburtsdatum)
+        )

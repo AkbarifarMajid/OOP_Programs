@@ -1,3 +1,5 @@
+# This class handles payment (Zahlung) information and saves it in the database
+
 from produkte.produkt import Produkt
 
 class Warenkorb:
@@ -31,3 +33,7 @@ class Warenkorb:
             beschreibung += f"- {p.name}: {p.price} €\n"
         beschreibung += f"Gesamtsumme: {round(self.gesamtsumme, 2)} €"
         return beschreibung
+
+
+# This class handles the shopping cart (Warenkorb) for each customer
+

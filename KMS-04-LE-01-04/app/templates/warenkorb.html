@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Warenkorb</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm sticky-top">
+    <div class="container-fluid">
+          <a class="navbar-brand text-danger fw-bold" href="/">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Logo" style="height:100px;">
+            </a>
+        <div class="d-flex justify-content-between w-100">
+            <div>
+                <a class="nav-link d-inline" href="/">Startseite</a>
+                <a class="nav-link d-inline" href="/produkte">&#128717; Produkte</a>
+            </div>
+            <div>
+                <a class="nav-link d-inline" href="/warenkorb">&#128722; Warenkorb</a>
+                <a class="nav-link d-inline" href="/logout">&#128682; Abmelden</a>
+                <span class="fw-bold">{{ user_email }}</span>
+            </div>
+        </div>
+    </div>
+</nav>
+
+    <div class="container mt-5">
+        <h2 class="mb-4 border-start border-4 border-primary ps-3">&#128722; Ihr Warenkorb</h2>
+
+        {% if warenkorb %}
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Produktname</th>
+                            <th>Kategorie</th>
+                            <th>Einzelpreis</th>
+                            <th>Anzahl</th>
+                            <th>Zwischensumme</th>
+                            <th>Aktion</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set gesamt = namespace(wert=0) %}
+                        {% for produkt in warenkorb %}
+                            {% set subtotal = produkt['price'] * produkt['anzahl'] %}
+                            {% set gesamt.wert = gesamt.wert + subtotal %}
+                            <tr>
+                                <td>{{ produkt['name'] }}</td>
+                                <td>{{ produkt['typ'] }}</td>
+                                <td>{{ produkt['price'] }} €</td>
+                                <td>{{ produkt['anzahl'] }}</td>
+                                <td>{{ "%.2f"|format(produkt['price'] * produkt['anzahl']) }} €</td>
+                                <td>
+                                    <a href="{{ url_for('produkt_erhoehen', id=produkt['id']) }}" class="btn btn-sm btn-success me-1">
+                                        &#10133;
+                                    </a>
+                                    <a href="{{ url_for('produkt_verringern', id=produkt['id']) }}" class="btn btn-sm btn-warning me-1">
+                                        &#10134;
+                                    </a>
+                                    <a href="{{ url_for('produkt_entfernen', id=produkt['id']) }}" class="btn btn-sm btn-danger">
+                                        &#10060;
+                                    </a>
+
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="table-secondary fw-bold">
+                            <td colspan="4" class="text-end">Gesamtsumme:</td>
+                            <td>{{ "%.2f"|format(gesamt.wert) }} €</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            <div class="text-center my-4">
+                <a href="{{ url_for('clear_cart') }}" class="btn btn-outline-danger">
+                    &#128465; Warenkorb leeren
+                </a>
+            </div>
+
+        <form action="{{ url_for('bestellung_absenden') }}" method="post" class="mt-4">
+
+    <div class="mb-3">
+        <label for="zahlung" class="form-label">&#128179; Zahlungsmethode wählen:</label>
+        <select class="form-select" id="zahlung" name="zahlung" required>
+            <option value="Kreditkarte">Kreditkarte</option>
+            <option value="PayPal">PayPal</option>
+            <option value="Banküberweisung">Banküberweisung</option>
+        </select>
+    </div>
+
+    <div class="mb-4">
+        <label for="lieferart" class="form-label">&#128666; Versandart wählen:</label>
+        <select class="form-select" id="lieferart" name="lieferart" required>
+            <option value="Standardversand">Standardversand</option>
+            <option value="Expressversand">Expressversand</option>
+            <option value="Same-Day-Delivery">Same-Day-Delivery</option>
+            <option value="Abholung im Laden">Abholung im Laden</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">&#128994; Bestellung abschicken</button>
+</form>
+
+        {% else %}
+            <div class="alert alert-info" role="alert">
+                Ihr Warenkorb ist leer.
+            </div>
+        {% endif %}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
