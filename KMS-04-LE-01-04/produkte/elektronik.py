@@ -59,19 +59,3 @@ class Elektronik(Produkt):
             WHERE p.id = %s AND p.kategorie = 'elektronik'
         '''
         return Storage.fetch_one(query, (id,))
-'''
-    @staticmethod
-    def load_by_id(id):
-        row = Elektronik.get_electronic_by_id(id)
-        if not row:
-            return None
-        elektronik = Elektronik(
-            name=row[1],
-            price=row[2],
-            weight=row[3],
-            brand=row[4],
-            warranty_years=row[5]
-        )
-        elektronik.id = row[0]
-        return elektronik
-'''

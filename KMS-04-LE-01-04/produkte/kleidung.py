@@ -59,19 +59,3 @@ class Kleidung(Produkt):
             WHERE p.id = %s AND p.kategorie = 'kleidung'
         '''
         return Storage.fetch_one(query, (id,))
-'''
-    @staticmethod
-    def load_by_id(id):
-        row = Kleidung.get_clothing_by_id(id)
-        if not row:
-            return None
-        kleidung = Kleidung(
-            name=row[1],
-            price=row[2],
-            weight=row[3],
-            size=row[4],
-            color=row[5]
-        )
-        kleidung.id = row[0]
-        return kleidung
-'''

@@ -16,14 +16,14 @@ class Bestellung:
         self.versand = VersandService(self.produkte)
         self.versandkosten = self.versand.berechne_versandkosten(self.lieferart)
 
-        # حالا با متد اختصاصی همه چیز محاسبه می‌شود
+
         self.berechne_gesamtbetrag()
 
     def berechne_gesamtbetrag(self):
         self.bruttosumme = sum(p.price * getattr(p, "anzahl", 1) for p in self.produkte)
         self.rabatt = 0
 
-        # بررسی تخفیف مشتری شرکتی
+
         if hasattr(self.kunde, "kundentyp") and self.kunde.kundentyp == "firma":
             self.rabatt = round(self.bruttosumme * 0.05, 2)
 

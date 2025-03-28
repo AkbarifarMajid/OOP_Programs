@@ -11,21 +11,7 @@ class VersandService:
         self.produkte = produkte
         self.gesamtgewicht = self.berechne_gesamtgewicht()
         self.versandkosten = 0.0
-    '''
-    # Let the user choose a delivery option
-    def lieferung_auswahl(self):
-        print("\nVerfügbare Lieferoptionen:")
-        for i, option in enumerate(self.lieferoptionen, 1):
-            print(f"{i}. {option}")
-        try:
-            auswahl = int(input("\nBitte wählen Sie eine Lieferoption (1-4): "))
-            if 1 <= auswahl <= len(self.lieferoptionen):
-                return self.lieferoptionen[auswahl - 1]
-            else:
-                raise ValueError("Ungültige Auswahl")
-        except ValueError:
-            raise ValueError("Bitte eine gültige Zahl eingeben!")
-    '''
+
     # Calculate total weight of all products
     def berechne_gesamtgewicht(self):
         # Gesamtgewicht aus allen Produkten berechnen

@@ -59,20 +59,3 @@ class Buch(Produkt):
             WHERE p.id = %s AND p.kategorie = 'buch'
         '''
         return Storage.fetch_one(query, (id,))
-'''
-    @staticmethod
-    def load_by_id(id):
-        row = Buch.get_book_by_id(id)
-        if not row:
-            return None
-        buch = Buch(
-            name=row[1],
-            price=row[2],
-            weight=row[3],
-            author=row[4],
-            pages_count=row[5]
-        )
-        buch.id = row[0]
-        return buch
-
-'''

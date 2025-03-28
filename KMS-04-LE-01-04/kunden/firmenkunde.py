@@ -33,7 +33,7 @@ class Firmenkunde(Kunde):
 
         # Objekt erstellen
         kunde = Firmenkunde(name, address, email, phone, password, company_number)
-        kunde.kundentyp = "firma"  # ✅ بسیار مهم برای تخفیف
+        kunde.kundentyp = "firma"
 
         # In Haupttabelle einfügen
         query1 = """
